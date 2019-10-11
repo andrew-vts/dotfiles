@@ -1,0 +1,9 @@
+#!/bin/bash
+
+if command -v rg &> /dev/null; then
+  alias g='rg'
+else
+  alias g='grep'
+fi
+
+g '[^[:print]]'

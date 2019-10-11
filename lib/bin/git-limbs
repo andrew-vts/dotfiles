@@ -1,0 +1,16 @@
+#!/bin/bash
+
+branch_info() {
+  ref=$1
+  range=$(git fork-point "$ref" master)..$ref
+  commit_count=$(git rev-list --count "$range")
+  authors=$(git log --pretty="%an" "$range" | sort | uniq | sed '$!s/$/,/' | xargs)
+  last_commit_at=$(git log -1 --format='%ci' "$ref")
+  printf "%s\t%s\t%d commits\t%s\n" "$ref" "$last_commit_at" "$commit_count" "$authors"
+}
+
+export -f branch_info
+
+git for-each-ref --format '%(refname)' \
+  | grep --extended-regexp --invert-match '/(master|HEAD)$' \
+  | xargs -I% -P4 bash -c 'branch_info '\'%\'
